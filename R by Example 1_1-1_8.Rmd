@@ -1,0 +1,153 @@
+---
+title: "Exercises 1.1-1.8"
+author: "Aleksandra Kilijańska"
+date: "2023-04-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1.1 (Normal percentiles). 
+The qnorm function returns the percentiles
+(quantiles) of a normal distribution. Use the qnorm function to find the 95th
+percentile of the standard normal distribution. Then, use the qnorm function
+to find the quartiles of the standard normal distribution (the quartiles are
+the 25th, 50th, and 75th percentiles). Hint: Use c(.25, .5, .75) as the first
+argument to qnorm.
+```{r}
+qnorm(.95)
+qnorm(c(.25,.5,.75))
+```
+## 1.2 (Chi-square density curve). 
+Use the curve function to display the
+graph of the χ2(1) density. The chi-square density function is dchisq.
+```{r}
+
+curve(dchisq(x, df = 1), from=0, to=10, n=100, main = "X² Density", xlab="x", ylab = "Density", col = "purple")
+```
+
+## 1.3  (Gamma densities). 
+Use the curve function to display the graph of the
+gamma density with shape parameter 1 and rate parameter 1. Then use the
+curve function with add=TRUE to display the graphs of the gamma density
+with shape parameter k and rate 1 for 2,3, all in the same graphics window.
+The gamma density function is dgamma. Consult the help file ?dgamma to see
+how to specify the parameters.
+```{r}
+curve(dgamma(x, shape = 1, rate = 1), from = 0, to = 10, col = "purple",
+      xlab = "x", ylab = "Density", main = "Gamma Density Functions")
+curve(dgamma(x, shape = 2, rate = 1), from = 0, to = 10, add = TRUE, col = "blue")
+curve(dgamma(x, shape = 3, rate = 1), from = 0, to = 10, add = TRUE, col = "green")
+legend("topright", legend=c("k=1", "k=2", "k=3"), col=c("purple", "blue", "green"), lty=1)
+```
+
+## 1.4. (Binomial probabilities). 
+Let X be the number of “ones” obtained in
+12 rolls of a fair die. Then X has a Binomial(n = 12, p = 1/3) distribution.
+Compute a table of binomial probabilities for x = 0,1,...,12 by two methods:
+a. Use the probability density formula and vectorized arithmetic in R. Use 0:12 for the sequence of x values and
+the choose function to compute the binomial coefficients (n k).
+```{r}
+k = 0:12
+n = 12
+p = 1/3
+a = choose(n,k)*p^k*(1-p)^(n-k)
+print(a)
+```
+b. Use the dbinom function provided in R and compare your results using
+both methods.
+```{r}
+b = dbinom(k,n,p)
+print(b)
+```
+
+```{r}
+table=cbind(k,a,b)
+print(table)
+```
+## 1.5. (Binomial CDF). 
+Let X be the number of “ones” obtained in 12 rolls
+of a fair die. Then X has a Binomial(n = 12, p = 1/3) distribution. Compute
+a table of cumulative binomial probabilities (the CDF) for x = 0,1,...,12 by
+two methods: (1) using cumsum and the result of Exercise 1.4, and (2) using
+the pbinom function. 
+
+```{r}
+binominal_cdf_a=cumsum(a)
+binominal_cdf_b=pbinom(k,n,p)
+table_binomal_cdf=cbind(k, binominal_cdf_a,binominal_cdf_b)
+table_binomal_cdf
+```
+What is P(X > 7)?
+```{r}
+1-pbinom(7,n,p)
+```
+
+## 1.6 (Presidents’ heights). 
+Refer to Example 1.2 where the heights of the
+United States Presidents are compared with their main opponent in the presidential election. Create a scatterplot of the loser’s height vs the winner’s
+height using the plot function. Compare the plot to the more detailed plot
+shown in the Wikipedia article “Heights of Presidents of the United States
+and presidential candidates” [54].
+```{r}
+winner = c(185, 182, 182, 188, 188, 188, 185, 185, 177, 182, 182, 193, 183, 179, 179, 175)
+opponent = c(175, 193, 185, 187, 188, 173, 180, 177, 183, 185, 180, 180, 182, 178, 178, 173)
+
+plot(winner, opponent, xlab = "Winner's Height (cm)",
+      ylab = "Loser's Height (cm)",
+      main = "Scatterplot of Winner's Height vs Loser's Height", col="blue",pch=19)
+```
+
+## 1.7 (Simulated “horsekicks” data). 
+The rpois function generates random
+observations from a Poisson distribution. In Example 1.3, we compared the
+deaths due to horsekicks to a Poisson distribution with mean λ = 0.61, and
+in Example 1.4 we simulated random Poisson(λ = 0.61) data. Use the rpois
+function to simulate very large (n = 1000 and n = 10000) Poisson(λ = 0.61)
+random samples. Find the frequency distribution, mean and variance for the
+sample. Compare the theoretical Poisson density with the sample proportions
+(see Example 1.4).
+
+```{r}
+samples1 = rpois(1000, 0.61)
+samples2= rpois(10000,0.61)
+
+freq1 = table(samples1)
+mean1 = mean(samples1)
+var1 = var(samples1)
+
+freq2 = table(samples2)
+mean2 = mean(samples2)
+var2 = var(samples2)
+
+
+cat("Sample of size 1000:\n")
+cat("Frequency distribution:\n", freq1, "\n")
+cat("Mean:", mean1, "\n")
+cat("Variance:", var1, "\n")
+
+cat("Sample of size 10000:\n")
+cat("Frequency distribution:\n", freq2, "\n")
+cat("Mean:", mean2, "\n")
+cat("Variance:", var2, "\n")
+
+
+```
+```{r}
+theoretical = dpois(0:4, lambda=.61)
+sample = freq1 / 1000
+cbind(theoretical, sample)
+```
+
+## 1.8 (horsekicks, continued).
+Refer to Example 1.3. Using the ppois function, compute the cumulative distribution function (CDF) for the Poisson
+distribution with mean λ = 0.61, for the values 0 to 4. Compare these probabilities with the empirical CDF. The empirical CDF is the cumulative sum of
+the sample proportions p, which is easily computed using the cumsum function. Combine the values of 0:4, the CDF, and the empirical CDF in a matrix
+to display these results in a single table.
+```{r}
+cdf_Poisson = ppois(0:4, 0.61)
+empirical_cdf1 = cumsum(freq1 / 1000)
+matrix(c(0:4,cdf_Poisson, empirical_cdf1),ncol=3)
+```

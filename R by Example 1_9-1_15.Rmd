@@ -1,0 +1,131 @@
+---
+title: "Exercises 1.9-1.15"
+author: "Aleksandra Kilijańska"
+date: "2023-04-18"
+output: html_document
+---
+## 1.9 (Custom standard deviation function).
+Write a function sd.n similar to the function var.n in Example 1.5 that will return the estimate σˆ (the
+square root of σˆ2). Try this function on the temperature data of Example 1.1.
+
+```{r}
+sd.n = function(x) {
+  n = length(x)
+  if (n == 1) {
+    stop("Need at least two data points")
+  }
+  m = mean(x)
+  s = sqrt(sum((x - m)^2) / (n - 1))
+  return(s)
+}
+
+temps = c(51.9, 51.8, 51.9, 53)
+sd.n(temps)
+
+```
+## 1.10 (Euclidean norm function). 
+Write a function norm that will compute
+the Euclidean norm of a numeric vector. The Euclidean norm of a vector
+x = (x1,...,xn) is... Use vectorized operations to compute the sum. Try this function on the vectors (0,0,0,1) and (2,5,2,4) to check that your function result is correct.
+
+```{r}
+norm = function(x){
+ 
+  return(sqrt(sum(x^2)))
+}
+
+v1=c(0,0,0,1)
+norm(v1)
+
+v2=c(2,5,2,4)
+norm(v2)
+```
+
+## 1.11 (Numerical integration). 
+Use the curve function to display the
+graph of the function f(x) = e−x2
+/(1 +x2) on the interval 0 ≤ x ≤ 10. Then
+use the integrate function to compute the value of the integral. The upper limit at infinity is specified by upper=Inf in the integrate function.
+```{r}
+f = function(x) exp(-x^2) / (1 + x^2)
+curve(f, 0, 10, ylab = "f(x)", xlab = "x", main="graph of the function f(x)", col="purple")
+```
+```{r}
+integrate(f,0,Inf)
+```
+
+
+## 1.12 (Bivariate normal). 
+Construct a matrix with 10 rows and 2 columns,
+containing random standard normal data:
+x = matrix(rnorm(20), 10, 2)
+This is a random sample of 10 observations from a standard bivariate normal
+distribution. Use the apply function and your norm function from Exercise
+1.10 to compute the Euclidean norms for each of these 10 observations.
+```{r}
+x = matrix(rnorm(20), 10, 2)
+norms = apply(x, 1, norm)
+
+print(norms)
+```
+
+## 1.13 (lunatics data). 
+Obtain a five-number summary for the numeric variables in the lunatics data set (see Example 1.12). From the summary we can
+get an idea about the skewness of variables by comparing the median and
+the mean population. Which of the distributions are skewed, and in which
+direction?
+```{r}
+library(BaM)
+```
+```{r lunatics}
+data(lunatics)
+lunatics
+```
+
+```{r}
+summary(lunatics[2:6])
+```
+All of the variables are right skewed because their means are larger than their medians.
+
+
+## 1.14 (Tearing factor of paper). 
+The following data describe the tearing
+factor of paper manufactured under different pressures during pressing. The
+data is given in Hand et al. [21, Page 4]. Four sheets of paper were selected
+and tested from each of the five batches manufactured.
+
+Enter this data into an R data frame with two variables: tear factor and
+pressure. Hint: it may be easiest to enter it into a spreadsheet, and then
+save it as a tab or comma delimited file (.txt or .csv). There should be 20
+observations after a successful import.
+```{r}
+tear_factor <- c(112, 119, 117, 113, 108, 99, 112, 118, 120,
+      106, 102, 109, 110, 101, 99, 104, 100, 102, 96, 101)
+pressure <- rep(c(35.0, 49.5, 70.0, 99.0, 140.0), each = 4)
+paper_data <- data.frame(pressure, tear_factor)
+paper_data
+```
+
+## 1.15 (Vectorized operations). 
+We have seen two examples of vectorized
+arithmetic in Example 1.1. In the conversion to Celsius, the operations involved one vector temps of length four and scalars (32 and 5/9). When we
+computed differences, the operation involved two vectors temps and CT of
+length four. In both cases, the arithmetic operations were applied element
+by element. What would happen if two vectors of different lengths appear
+together in an arithmetic expression? Try the following examples using the
+colon operator : to generate a sequence of consecutive integers.
+
+a:
+```{r}
+x = 1:8
+n = 1:2
+x+n
+```
+R repeats the shorter vector as many times as necessary until its length is the same as the longer vector.
+
+b:
+```{r}
+n = 1:3
+x+n
+```
+R repeats the shorter vector as many times as necessary until its length is the same as the longer vector, but in this case, throws a warning because longer vector length is not a multiple of shorter vector.
